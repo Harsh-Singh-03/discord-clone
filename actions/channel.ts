@@ -2,7 +2,7 @@
 
 import { fetchUser } from "@/lib/auth-service"
 import { db } from "@/lib/db"
-import { ChannelType, MemberRole } from "@prisma/client"
+import { ChannelAccess, ChannelType, MemberRole } from "@prisma/client"
 import { revalidatePath } from "next/cache"
 
 interface channelProps{
@@ -10,9 +10,11 @@ interface channelProps{
     role?: MemberRole,
     name: string,
     type: ChannelType,
-    path: string
+    path: string,
+    whoCanAccess: ChannelAccess
+    isPrivate: boolean
 }
-export const createChannelInServer = async ({serverId, name, type, path}: channelProps) => {
+export const createChannelInServer = async ({serverId, name, type, path, whoCanAccess, isPrivate}: channelProps) => {
     try {
         const res = await fetchUser()
         if(!res || !res.success || !res.user) return {success: false, message: 'Session expired!'}
@@ -30,7 +32,9 @@ export const createChannelInServer = async ({serverId, name, type, path}: channe
                 name,
                 serverId: serverId,
                 type: type,
-                userId: res.user.id
+                userId: res.user.id,
+                isPrivate: isPrivate || false,
+                whoCanMessage: whoCanAccess || ChannelAccess.EVERYONE
             }
         })
         revalidatePath(path)

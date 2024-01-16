@@ -5,7 +5,7 @@ import { ConferenceRoom } from "@/components/globals/conference-room"
 import { Separator } from "@/components/ui/separator"
 import { fetchUser } from "@/lib/auth-service"
 import { db } from "@/lib/db"
-import { ChannelType } from "@prisma/client"
+import { ChannelAccess, ChannelType, MemberRole } from "@prisma/client"
 import { redirect } from "next/navigation"
 
 interface props {
@@ -32,6 +32,19 @@ const page = async ({ params }: props) => {
 
   if (!channelData || !memberData) redirect(`/`)
 
+  if (channelData.isPrivate === true && memberData.role === MemberRole.GUEST) {
+    redirect(`/servers/${params.serverId}`)
+  }
+
+  let isMessageAccess = true
+
+  if(channelData.whoCanMessage === ChannelAccess.ADMIN_ONLY && memberData.role !== MemberRole.ADMIN){
+    isMessageAccess = false
+  }
+  if(channelData.whoCanMessage === ChannelAccess.MODS && memberData.role === MemberRole.GUEST){
+    isMessageAccess = false
+  }
+
   return (
     <div className="bg-white dark:bg-[#313338] flex flex-col h-full relative">
       <ChatHeader
@@ -56,15 +69,19 @@ const page = async ({ params }: props) => {
             paramKey="channelId"
             paramValue={channelData.id}
           />
-          <ChatMessageSender
-            name={channelData.name}
-            type="channel"
-            apiUrl='/api/socket/message'
-            query={{
-              channelId: channelData.id,
-              serverId: channelData.serverId,
-              userId: res.user.id
-            }} />
+          {isMessageAccess ? (
+            <ChatMessageSender
+              name={channelData.name}
+              type="channel"
+              apiUrl='/api/socket/message'
+              query={{
+                channelId: channelData.id,
+                serverId: channelData.serverId,
+                userId: res.user.id
+              }} />
+          ): (
+            <span className="text-muted-foreground text-xs text-center py-4">You do not have accesss to message on channel <span className="text-indigo-500">#{channelData.name}</span></span>
+          )}
         </>
       )}
       {channelData.type === ChannelType.VIDEO && (

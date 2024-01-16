@@ -30,12 +30,12 @@ export const CreateServer = ({ children }: { children: React.ReactNode }) => {
         startTransition(() => {
             createServer(name, imageUrl)
                 .then((data) => {
-                    if (data.success) {
+                    if (data.success && data.serverId) {
                         toast.success(data.message)
                         setName('')
                         setImageUrl('')
                         closeRef.current?.click()
-                        router.refresh()
+                        router.push(`/servers/${data.serverId}`)
                     } else {
                         toast.success(data.message || 'Something went wrong!')
                     }

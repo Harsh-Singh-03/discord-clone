@@ -76,7 +76,7 @@ export const ChatMessageSender = ({ name, type, apiUrl, query }: props) => {
                     placeholder={`Message #${name}`}
                     value={content}
                     disabled={isLoad}
-                    className="w-full text-sm md:text-base disabled:text-muted-foreground/70 border-none outline-none py-2 lg:py-3 px-4 bg-[#F2F3F5] dark:bg-zinc-700/75 rounded-full"
+                    className="w-full text-sm md:text-base disabled:text-muted-foreground/70 border-none outline-none py-2 lg:py-3 px-4 bg-[#F2F3F5] dark:bg-zinc-700/75 rounded-full placeholder:text-sm"
                     onChange={(e) => setContent(e.target.value)}
                     required />
 

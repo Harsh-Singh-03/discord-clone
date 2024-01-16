@@ -2,7 +2,6 @@ import { Channel, MemberRole } from "@prisma/client"
 import { ServerChannel } from "./server-channel"
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion"
 import { ScrollArea } from "@/components/ui/scroll-area"
-import { Loader2 } from "lucide-react"
 import { Skeleton } from "@/components/ui/skeleton"
 import { Separator } from "@/components/ui/separator"
 
@@ -34,13 +33,19 @@ export const ServerChannelList = ({ groupData, role }: props) => {
                                     </AccordionTrigger>
                                     <AccordionContent className="pb-0">
                                         <div className="space-y-[2px]">
-                                            {data.data.map((channel) => (
-                                                <ServerChannel
-                                                    key={channel.id}
-                                                    channel={channel}
-                                                    role={role}
-                                                />
-                                            ))}
+                                            {data.data.map((channel) => {
+                                                const isChannelHide = channel.isPrivate === true && role === MemberRole.GUEST
+                                                if(isChannelHide){
+                                                    return null
+                                                }
+                                                return (
+                                                    <ServerChannel
+                                                        key={channel.id}
+                                                        channel={channel}
+                                                        role={role}
+                                                    />
+                                                )
+                                            })}
                                         </div>
                                     </AccordionContent>
                                 </AccordionItem>

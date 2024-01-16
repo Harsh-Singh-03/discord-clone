@@ -31,7 +31,7 @@ export const createServer = async (name: string, imageUrl: string) => {
             }
         })
         if (!response) return { success: false, message: 'Something went wrong!' }
-        return { success: true, message: `${response.name} created successfully!` }
+        return { success: true, message: `${response.name} created successfully!`, serverId: response.id }
     } catch {
         return { success: false, message: 'Something went wrong!' }
     }

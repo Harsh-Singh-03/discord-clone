@@ -51,18 +51,26 @@ enum ChannelType {
   VIDEO
 }
 
+enum ChannelAccess {
+  EVERYONE
+  MODS
+  ADMIN_ONLY
+}
+
 // will add channel mode public & private
 model Channel {
-  id        String      @id @default(auto()) @map("_id") @db.ObjectId
-  name      String
-  type      ChannelType @default(TEXT)
-  userId    String      @db.ObjectId
-  user      User        @relation(fields: [userId], references: [id], onDelete: Cascade)
-  serverId  String      @db.ObjectId
-  messages  Message[]
-  server    Server      @relation(fields: [serverId], references: [id], onDelete: Cascade)
-  createdAt DateTime    @default(now())
-  updatedAt DateTime    @updatedAt
+  id            String       @id @default(auto()) @map("_id") @db.ObjectId
+  name          String
+  type          ChannelType   @default(TEXT)
+  whoCanMessage ChannelAccess @default(EVERYONE)
+  isPrivate     Boolean       @default(false)
+  userId        String        @db.ObjectId
+  user          User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  serverId      String        @db.ObjectId
+  messages      Message[]
+  server        Server        @relation(fields: [serverId], references: [id], onDelete: Cascade)
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
 
   @@index([userId])
   @@index([serverId])
@@ -95,19 +103,19 @@ enum MessageType {
 }
 
 model Message {
-  id          String     @id @default(auto()) @map("_id") @db.ObjectId
+  id          String      @id @default(auto()) @map("_id") @db.ObjectId
   content     String
   messageType MessageType @default(TEXT)
 
-  memberId    String @db.ObjectId
-  member      Member @relation(fields: [memberId], references: [id], onDelete: Cascade)
-  channelId   String @db.ObjectId
-  channel     Channel @relation(fields: [channelId], references: [id], onDelete: Cascade)
-  isDeleted   Boolean @default(false)
-  
-  createdAt   DateTime   @default(now())
-  updatedAt   DateTime   @updatedAt
+  memberId  String  @db.ObjectId
+  member    Member  @relation(fields: [memberId], references: [id], onDelete: Cascade)
+  channelId String  @db.ObjectId
+  channel   Channel @relation(fields: [channelId], references: [id], onDelete: Cascade)
+  isDeleted Boolean @default(false)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   @@index([memberId])
   @@index([channelId])
-} 
+}

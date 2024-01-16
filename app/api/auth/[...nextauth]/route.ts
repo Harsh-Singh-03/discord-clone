@@ -2,6 +2,7 @@ import { db } from "@/lib/db";
 import NextAuth from "next-auth"
 import CredentialsProvider from "next-auth/providers/credentials";
 import bcrypt from 'bcryptjs'
+import { revalidatePath } from "next/cache";
 
 export const authOptions = {
     // Configure one or more authentication providers
@@ -21,6 +22,7 @@ export const authOptions = {
                     if (user) {
                         const passCompare = await bcrypt.compare(credentials.password, user.password)
                         if (passCompare) {
+                            revalidatePath('/')
                             return user
                         } else {
                             throw new Error("Invalid Credential")
