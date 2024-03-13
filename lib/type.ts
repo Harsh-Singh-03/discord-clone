@@ -1,4 +1,4 @@
-import { Channel, Member, Message, Server, User } from "@prisma/client";
+import { Category, Channel, Member, Message, Server, User } from "@prisma/client";
 import { NextApiResponse } from "next";
 import {Server as NetServer, Socket} from 'net'
 import {Server as SocketIOServer} from 'socket.io'
@@ -13,11 +13,12 @@ export type baseUserType = {
     provider: string | null;
     isEmailVerified: boolean;
 }
+
 export type ServerWithMembersWithProfiles = Server & {
     members: (Member & { user: baseUserType })[];
-    channels: Channel[];
+    Category: (Category & {channels: Channel[], _count: {channels: number}})[];
     _count: {
-        channels: number,
+        Category: number,
         members: number
     }
 };

@@ -25,12 +25,22 @@ export const createServer = async (name: string, imageUrl: string) => {
                 members: {
                     create: [{ userId: res.user.id, role: MemberRole.ADMIN }]
                 },
-                channels: {
-                    create: [{ name: 'general', userId: res.user.id }]
+                Category: {
+                    create: [{ 
+                        title: 'Uncategorized', 
+                        userId: res.user.id ,
+                        channels: {
+                            create: [{
+                                name: 'general',
+                                userId: res.user.id
+                            }]
+                        }
+                    }]
                 }
             }
         })
         if (!response) return { success: false, message: 'Something went wrong!' }
+        revalidatePath('/')
         return { success: true, message: `${response.name} created successfully!`, serverId: response.id }
     } catch {
         return { success: false, message: 'Something went wrong!' }
@@ -63,14 +73,23 @@ export const getServerdata = async (serverId: string) => {
                         role: 'asc'
                     }
                 },
-                channels: {
+                Category:{
+                    include: {
+                        channels: {
+                            orderBy: {
+                                createdAt: 'desc'
+                            }
+                        },
+                        _count: true,
+                    },
                     orderBy: {
-                        createdAt: 'asc'
+                        createdAt: 'desc'
                     }
                 },
                 _count: true
             }
         })
+
         if (!data) return { success: false }
         return { success: true, server: data }
     } catch {
@@ -107,7 +126,7 @@ export const LeaveServer = async (serverId: string, serverName: string) => {
                 userId: res.user.id
             }
         })
-        if (!result || result.role === 'ADMIN') {
+        if (!result || result.role === MemberRole.ADMIN) {
             return {
                 success: false,
                 message: 'Invalid request!'

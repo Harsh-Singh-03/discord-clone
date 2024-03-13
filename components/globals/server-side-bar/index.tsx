@@ -31,12 +31,7 @@ export const ServerSideBar = async ({ serverId, userId }: props) => {
     const response = await getServerdata(serverId)
     if (!response || !response.success || !response.server) redirect('/')
 
-    const textChannels = response.server.channels.filter((channel) => channel.type === ChannelType.TEXT)
-    const audioChannels = response.server.channels.filter((channel) => channel.type === ChannelType.AUDIO)
-    const videoChannels = response.server.channels.filter((channel) => channel.type === ChannelType.VIDEO)
     const members = response.server.members.filter((member) => member.userId !== userId)
-
-    const groupData = [{ data: textChannels, title: 'Text Channels' }, { data: audioChannels, title: 'Audio Channels' }, { data: videoChannels, title: 'Video Channels' }]
 
     const role = response.server.members.find((member) => member.userId === userId)?.role;
 
@@ -44,7 +39,7 @@ export const ServerSideBar = async ({ serverId, userId }: props) => {
         <Wrapper classes="w-full md:w-80 md:min-w-80 dark:bg-[#2B2D31] bg-[#F2F3F5]">
             <ServerHeader server={response.server} role={role} />
             <Separator className="h-0.5 rounded-md" />
-            <ServerSearch
+            {/* <ServerSearch
                 data={[
                     {
                         label: 'Text Channels', 
@@ -73,19 +68,10 @@ export const ServerSideBar = async ({ serverId, userId }: props) => {
                             icon: iconMap[channel.type],
                         }))
                     },
-                    {
-                        label: 'Members',
-                        type: 'member',
-                        data: members?.map((member) => ({
-                            id: member.id,
-                            name: member.user.username,
-                            icon: roleIconMap[member.role],
-                        }))
-                    },
                 ]}
-            />
+            /> */}
             <Separator className="bg-zinc-200 dark:bg-zinc-700 rounded-md" />
-            <ServerChannelList groupData={groupData} role={role || MemberRole.GUEST} />
+            <ServerChannelList groupData={response.server.Category} role={role || MemberRole.GUEST} />
         </Wrapper>
     )
 }

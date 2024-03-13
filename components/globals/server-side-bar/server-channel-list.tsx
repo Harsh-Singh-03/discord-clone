@@ -1,4 +1,4 @@
-import { Channel, MemberRole } from "@prisma/client"
+import { Category, Channel, MemberRole } from "@prisma/client"
 import { ServerChannel } from "./server-channel"
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion"
 import { ScrollArea } from "@/components/ui/scroll-area"
@@ -6,10 +6,7 @@ import { Skeleton } from "@/components/ui/skeleton"
 import { Separator } from "@/components/ui/separator"
 
 interface props {
-    groupData: {
-        title: string,
-        data: Channel[]
-    }[],
+    groupData: (Category & {channels: Channel[], _count: {channels: number}})[],
     role: MemberRole
 }
 
@@ -23,7 +20,7 @@ export const ServerChannelList = ({ groupData, role }: props) => {
                 defaultOpen = defaultOpen.concat(`item-${index}`)
                 return (
                     <div key={index} className="w-full">
-                        {!!data.data.length && (
+                        {!!data.channels.length && (
                             <Accordion type="multiple" defaultValue={defaultOpen} className="w-full" >
                                 <AccordionItem value={`item-${index}`} className="py-2 border-b-zinc-200 dark:border-b-zinc-700">
                                     <AccordionTrigger className="py-0">
@@ -33,7 +30,7 @@ export const ServerChannelList = ({ groupData, role }: props) => {
                                     </AccordionTrigger>
                                     <AccordionContent className="pb-0">
                                         <div className="space-y-[2px]">
-                                            {data.data.map((channel) => {
+                                            {data.channels.map((channel) => {
                                                 const isChannelHide = channel.isPrivate === true && role === MemberRole.GUEST
                                                 if(isChannelHide){
                                                     return null

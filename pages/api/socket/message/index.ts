@@ -22,13 +22,16 @@ export default async function handler(req: NextApiRequest, res: NextApiResponseS
         const channelData = await db.channel.findUnique({
             where: {
                 id: channelId as string,
-                serverId: serverId as string
+                Category: {
+                    serverId: serverId as string
+                }
             }
         })
 
         const memberData = await db.member.findFirst({
             where: {
                 userId: userData.id,
+                serverId: serverId as string
             }
         })
 

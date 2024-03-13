@@ -11,38 +11,54 @@ datasource db {
 }
 
 model User {
-  id                     String    @id @default(auto()) @map("_id") @db.ObjectId
-  email                  String    @unique
-  username               String    @unique
+  id                     String     @id @default(auto()) @map("_id") @db.ObjectId
+  email                  String     @unique
+  username               String     @unique
   name                   String
   password               String
   image                  String?
   bio                    String?
   provider               String?
-  isEmailVerified        Boolean   @default(false)
+  isEmailVerified        Boolean    @default(false)
   emailVerificationToken String?
   resetPasswordToken     String?
   Server                 Server[]
   channels               Channel[]
   members                Member[]
-  createdAt              DateTime  @default(now())
-  updatedAt              DateTime  @updatedAt
+  Category               Category[]
+  createdAt              DateTime   @default(now())
+  updatedAt              DateTime   @updatedAt
 }
 
 model Server {
-  id         String    @id @default(auto()) @map("_id") @db.ObjectId
+  id         String     @id @default(auto()) @map("_id") @db.ObjectId
   name       String
   bio        String?
   imageUrl   String
-  inviteCode String    @unique
-  userId     String    @db.ObjectId
-  user       User      @relation(fields: [userId], references: [id], onDelete: Cascade)
-  channels   Channel[]
+  inviteCode String     @unique
+  userId     String     @db.ObjectId
+  user       User       @relation(fields: [userId], references: [id], onDelete: Cascade)
   members    Member[]
-  createdAt  DateTime  @default(now())
-  updatedAt  DateTime  @updatedAt
+  Category   Category[]
+  createdAt  DateTime   @default(now())
+  updatedAt  DateTime   @updatedAt
 
   @@index([userId])
+}
+
+model Category {
+  id        String    @id @default(auto()) @map("_id") @db.ObjectId
+  title     String
+  userId    String    @db.ObjectId
+  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  channels  Channel[]
+  serverId  String    @db.ObjectId
+  server    Server    @relation(fields: [serverId], references: [id], onDelete: Cascade)
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+
+  @@index([userId])
+  @@index([serverId])
 }
 
 enum ChannelType {
@@ -59,21 +75,21 @@ enum ChannelAccess {
 
 // will add channel mode public & private
 model Channel {
-  id            String       @id @default(auto()) @map("_id") @db.ObjectId
+  id            String        @id @default(auto()) @map("_id") @db.ObjectId
   name          String
   type          ChannelType   @default(TEXT)
   whoCanMessage ChannelAccess @default(EVERYONE)
   isPrivate     Boolean       @default(false)
   userId        String        @db.ObjectId
   user          User          @relation(fields: [userId], references: [id], onDelete: Cascade)
-  serverId      String        @db.ObjectId
   messages      Message[]
-  server        Server        @relation(fields: [serverId], references: [id], onDelete: Cascade)
+  categoryId    String        @db.ObjectId
+  Category      Category      @relation(fields: [categoryId], references: [id])
   createdAt     DateTime      @default(now())
   updatedAt     DateTime      @updatedAt
 
   @@index([userId])
-  @@index([serverId])
+  @@index([categoryId])
 }
 
 enum MemberRole {

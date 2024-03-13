@@ -6,7 +6,7 @@ import { Input } from "../ui/input"
 import { Label } from "../ui/label"
 import { Button } from "../ui/button"
 import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger, SelectValue } from "../ui/select"
-import { ChannelAccess, ChannelType } from "@prisma/client"
+import { Category, ChannelAccess, ChannelType } from "@prisma/client"
 import { isValidName } from "@/lib/utils"
 import { toast } from "sonner"
 import { createChannelInServer } from "@/actions/channel"
@@ -16,12 +16,14 @@ import { Info } from "lucide-react"
 
 interface props {
     serverId: string,
-    children: React.ReactNode
+    children: React.ReactNode,
+    categories: Category[]
 }
-export const CreateNewChannel = ({ serverId, children }: props) => {
+export const CreateNewChannel = ({ serverId, children, categories }: props) => {
 
     const [isPending, startTransition] = useTransition()
     const [name, setName] = useState("")
+    const [categoryId, setCategoryId] = useState("")
     const [type, setType] = useState<ChannelType>(ChannelType.TEXT)
     const [whoCanMessage, setWhoCanMessage] = useState<ChannelAccess>(ChannelAccess.EVERYONE)
     const [isPrivate, setIsPrivate] = useState(false)
@@ -30,12 +32,16 @@ export const CreateNewChannel = ({ serverId, children }: props) => {
 
     const onSubmit = (e: FormEvent) => {
         e.preventDefault()
+        if(!categoryId){
+            toast.error('Select category')
+            return
+        }
         if (!isValidName(name) || !type) {
             toast.error('Invalid field')
             return
         }
         startTransition(() => {
-            createChannelInServer({ serverId, name, type, path: path || '', isPrivate, whoCanAccess: whoCanMessage })
+            createChannelInServer({ serverId, name, type, path: path || '', isPrivate, whoCanAccess: whoCanMessage, categoryId })
                 .then((data) => {
                     if (data.success) {
                         toast.success(data.message)
@@ -65,7 +71,24 @@ export const CreateNewChannel = ({ serverId, children }: props) => {
                 <form onSubmit={onSubmit}>
                     <div className="px-4 md:px-6 pb-4 md:pb-6 flex flex-col gap-2">
                         <Label className="font-medium" >Channel name:</Label>
-                        <Input className="bg-zinc-300/50 border-0 site-input text-black focus-visible:ring-0 focus-visible:ring-offset-0" placeholder="Enter server name" value={name} onChange={(e) => setName(e.target.value)} disabled={isPending} />
+                        <Input className="bg-zinc-300/50 border-0 site-input text-black focus-visible:ring-0 focus-visible:ring-offset-0" placeholder="Enter channel name" value={name} onChange={(e) => setName(e.target.value)} disabled={isPending} />
+
+                        <Label className="font-medium mt-2" >Select Category:</Label>
+                        <Select disabled={isPending} onValueChange={(e: string) => setCategoryId(e)}>
+                            <SelectTrigger className="w-full bg-zinc-300/50 border-0"  >
+                                <SelectValue placeholder="Select category" />
+                            </SelectTrigger>
+                            <SelectContent className="bg-white text-black border-0">
+                                <SelectGroup>
+                                    <SelectLabel>Server Categories</SelectLabel>
+                                    {categories.map(item => {
+                                        return (
+                                            <SelectItem value={item.id} key={item.id}>{item.title}</SelectItem>
+                                        )
+                                    })}
+                                </SelectGroup>
+                            </SelectContent>
+                        </Select>
 
                         <Label className="font-medium mt-2" >Channel Type:</Label>
                         <Select disabled={isPending} onValueChange={(e: ChannelType) => setType(e)} defaultValue={type}>
@@ -102,7 +125,7 @@ export const CreateNewChannel = ({ serverId, children }: props) => {
                                 </Select>
                                 <div className="flex gap-x-2 text-zinc-500 text-xs">
                                     <Info className="w-4 h-4" />
-                                    <span>Select who can message to this channel only for text channels</span>
+                                    <span>Select who can send messages, Only for text channels</span>
                                 </div>
                             </>
                         )}

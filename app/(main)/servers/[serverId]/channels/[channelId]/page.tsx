@@ -20,7 +20,7 @@ const page = async ({ params }: props) => {
   if (!res || !res.success || !res.user) redirect('/sign-in')
 
   const channelData = await db.channel.findUnique({
-    where: { id: params.channelId, serverId: params.serverId }
+    where: { id: params.channelId, Category: {serverId: params.serverId} }
   })
 
   const memberData = await db.member.findFirst({
@@ -49,7 +49,7 @@ const page = async ({ params }: props) => {
     <div className="bg-white dark:bg-[#313338] flex flex-col h-full relative">
       <ChatHeader
         name={channelData.name}
-        serverId={channelData.serverId}
+        serverId={params.serverId}
         type="channel"
       />
       <Separator className="h-0.5 rounded-md mt-12" />
@@ -63,7 +63,7 @@ const page = async ({ params }: props) => {
             socketUrl="/api/socket/message"
             socketQuery={{
               channelId: channelData.id,
-              serverId: channelData.serverId,
+              serverId: params.serverId,
               userId: res.user.id
             }}
             paramKey="channelId"
@@ -76,7 +76,7 @@ const page = async ({ params }: props) => {
               apiUrl='/api/socket/message'
               query={{
                 channelId: channelData.id,
-                serverId: channelData.serverId,
+                serverId: params.serverId,
                 userId: res.user.id
               }} />
           ): (

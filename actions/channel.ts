@@ -7,6 +7,7 @@ import { revalidatePath } from "next/cache"
 
 interface channelProps{
     serverId: string,
+    categoryId: string,
     role?: MemberRole,
     name: string,
     type: ChannelType,
@@ -14,23 +15,34 @@ interface channelProps{
     whoCanAccess: ChannelAccess
     isPrivate: boolean
 }
-export const createChannelInServer = async ({serverId, name, type, path, whoCanAccess, isPrivate}: channelProps) => {
+
+export const createChannelInServer = async ({categoryId, serverId, name, type, path, whoCanAccess, isPrivate}: channelProps) => {
     try {
         const res = await fetchUser()
         if(!res || !res.success || !res.user) return {success: false, message: 'Session expired!'}
-        const response = await db.server.findUnique({
-            where: {id: serverId},
-            select:{
-                members: true
+
+        const response = await db.member.findFirst({
+            where: {
+                userId: res.user.id,
+                serverId: serverId
             }
         })
         if(!response) return {success: false, message: "Invalid request"}
-        const role = response.members.find((member) => member.userId === res.user.id)?.role;
-        if(!role || role === 'GUEST') return {success: false, message: 'Unauthorized!'}
+        if(!response.role || response.role === MemberRole.GUEST) return {success: false, message: 'Unauthorized!'}
+
+        const category = await db.category.findUnique({
+            where: {
+                id: categoryId,
+                serverId: serverId 
+            }
+        })
+
+        if(!category) return {success: false, message: 'Not found'}
+        
         await db.channel.create({
             data: {
                 name,
-                serverId: serverId,
+                categoryId: category.id,
                 type: type,
                 userId: res.user.id,
                 isPrivate: isPrivate || false,
@@ -39,6 +51,7 @@ export const createChannelInServer = async ({serverId, name, type, path, whoCanA
         })
         revalidatePath(path)
         return {success: true, message: 'Channel created successfully!!'}
+        
     } catch {
         return {success: false, message: 'Something went wrong'}
     }

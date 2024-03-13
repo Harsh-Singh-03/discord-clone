@@ -44,7 +44,6 @@ export const ChatMessageSender = ({ name, type, apiUrl, query }: props) => {
 
             const data = await axios.post(url, body, { withCredentials: true })
             if (data.data.success === true && data.status === 200) {
-                toast.success("Message send")
                 setContent('')
             } else {
                 toast.error(data.data.message)

@@ -1,12 +1,10 @@
 import type { Metadata } from 'next'
 import { Inter } from 'next/font/google'
-import './globals.css'
+import '@/app/globals.css'
 import { ThemeProvider } from '@/components/provider/theme-provider'
 import { cn } from '@/lib/utils'
 import AuthProvider from '@/lib/session-provider'
 import { Toaster } from 'sonner'
-import { SocketProvider } from '@/components/provider/socket-provider'
-import { QueryProvider } from '@/components/provider/query-provider'
 
 const inter = Inter({ subsets: ['latin'] })
 
@@ -20,6 +18,7 @@ export default function RootLayout({
 }: {
   children: React.ReactNode
 }) {
+  
   return (
     <html lang="en" suppressHydrationWarning>
       <body className={cn(
@@ -33,14 +32,10 @@ export default function RootLayout({
           disableTransitionOnChange
           storageKey="discord-theme"
         >
-          <SocketProvider>
-            <AuthProvider>
-              <QueryProvider>
-                {children}
-              </QueryProvider>
-              <Toaster position='top-center' />
-            </AuthProvider>
-          </SocketProvider>
+          <AuthProvider>
+            {children}
+            <Toaster position='top-center' />
+          </AuthProvider>
         </ThemeProvider>
       </body>
     </html>

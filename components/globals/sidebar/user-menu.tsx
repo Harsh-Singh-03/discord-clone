@@ -10,26 +10,24 @@ import { useState } from "react";
 import { toast } from "sonner";
 import { UserAvatar } from "../user-avatar";
 import { resetPassRequest, verifyEmail } from "@/actions/user";
+import { UserModal } from "@/components/dialogs/manage-profile";
+import { baseUserType } from "@/lib/type";
 
 interface props {
-    email: string;
-    isEmailVerify: boolean;
-    username: string;
-    image: string;
-    name: string
+    user: baseUserType
 }
-const Usermenu = ({ email, isEmailVerify, username, image, name }: props) => {
+const Usermenu = ({ user }: props) => {
 
     const [isResetPassLoad, setIsResetPassLoad] = useState(false)
     const [isVerificationLoad, setIsVerificationLoad] = useState(false)
 
     const resetRequest = async () => {
-        if (!email || !isEmail(email)) {
+        if (!user.email || !isEmail(user.email)) {
             return;
         }
         try {
             setIsResetPassLoad(true)
-            const res = await resetPassRequest(email)
+            const res = await resetPassRequest(user.email)
             if (res && res.success) {
                 toast.success(res.message)
             } else {
@@ -43,12 +41,12 @@ const Usermenu = ({ email, isEmailVerify, username, image, name }: props) => {
     }
 
     const verificationReq = async () => {
-        if (!email || !isEmail(email)) {
+        if (!user.email || !isEmail(user.email)) {
             return;
         }
         try {
             setIsVerificationLoad(true)
-            const res = await verifyEmail(email)
+            const res = await verifyEmail(user.email)
             if (res && res.success) {
                 toast.success(res.message)
             } else {
@@ -65,24 +63,24 @@ const Usermenu = ({ email, isEmailVerify, username, image, name }: props) => {
         <div className="w-full">
             <div className="flex gap-4 items-center px-2">
                 <UserAvatar
-                    placeholder={name}
-                    imageUrl={image || ''}
+                    placeholder={user.name}
+                    imageUrl={user.image || ''}
                     size='md'
                 />
                 <div>
-                    <p className="font-medium text-base">{name}</p>
-                    <p className="text-xs text-muted-foreground">@{username}</p>
+                    <p className="font-medium text-base">{user.name}</p>
+                    <p className="text-xs text-muted-foreground">@{user.username}</p>
                 </div>
             </div>
             <Separator className="mt-3 mb-2" />
             <div className="my-2 w-full">
-                <Button variant='ghost' className="w-full justify-start text-muted-foreground" asChild>
-                    <Link href={`/u/${username}/settings`} className="gap-x-3 flex">
+                <UserModal user={user}>
+                    <Button variant='ghost' className="w-full flex gap-x-3 justify-start text-muted-foreground">
                         <UserCog className="w-4 h-4" />
                         <span>Manage Profile</span>
-                    </Link>
-                </Button>
-                {!isEmailVerify && (
+                    </Button>
+                </UserModal>
+                {!user.isEmailVerified && (
                     <Button variant='ghost' className="gap-x-3 w-full justify-start text-muted-foreground" disabled={isVerificationLoad} onClick={verificationReq}>
                         {isVerificationLoad ? <Loader2 className="w-4 h-4 animate-spin" /> : <MailWarning className="w-4 h-4" />}
                         <span>Verify your email</span>

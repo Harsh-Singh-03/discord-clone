@@ -63,7 +63,7 @@ export const SideBar = async ({ user }: props) => {
                             </Avatar>
                         </PopoverTrigger>
                         <PopoverContent side="right" className="px-2 pb-1">
-                            <Usermenu email={user.email} image={user.image || ''} isEmailVerify={user.isEmailVerified} username={user.username} name={user.name} />
+                            <Usermenu user={user} />
                         </PopoverContent>
                     </Popover>
                     <ModeToggle />

@@ -2,6 +2,7 @@ import { db } from '@/lib/db'
 import { NextResponse, NextRequest } from 'next/server'
 import bcrypt from 'bcryptjs'
 import { isEmail, isValidName, isValidPassword, isValidUsername } from '@/lib/utils';
+import { revalidatePath } from 'next/cache';
 
 interface RequestBody {
     email: string;
@@ -51,6 +52,7 @@ export async function POST(req: NextRequest) {
                 provider: 'credential'
             }
         })
+        revalidatePath('/')
         return NextResponse.json({ success: true, message: "Account created", status: 200 })
     } catch (error: any) {
         return NextResponse.json({ message: error.message, status: 500, success: false })

@@ -13,6 +13,7 @@ import { CreateNewChannel } from "@/components/dialogs/create-channel";
 import { ServerWithMembersWithProfiles } from "@/lib/type";
 import { LeaveModal } from "@/components/dialogs/leave-modal";
 import { DeleteServerModal } from "@/components/dialogs/delete-server-modal";
+import { CreateCategory } from "@/components/dialogs/create-category";
 
 interface ServerHeaderProps {
     server: ServerWithMembersWithProfiles
@@ -46,7 +47,7 @@ export const ServerHeader = ({
                     </div>
                     <div className="flex items-center text-[10px] md:text-xs gap-2 text-muted-foreground">
                         <span className="px-2 py-0.5 bg-muted rounded-full">Community server</span>
-                        <span>{server._count.channels} {server._count.channels > 1 ? 'channels' : 'channel'}</span>
+                        <span>{server._count.Category} {server._count.Category > 1 ? 'channels' : 'channel'}</span>
                         <span>{server._count.members} {server._count.members > 1 ? 'members' : 'member'}</span>
                         <span className="lowercase">You: @{role}</span>
                     </div>
@@ -60,17 +61,22 @@ export const ServerHeader = ({
                                         <UserPlus className="h-4 w-4 ml-auto" />
                                     </Button>
                                 </InviteDialog>
-                                <CreateNewChannel serverId={server.id}>
+                                <CreateNewChannel serverId={server.id} categories={server.Category} >
                                     <Button size='lg' variant='ghost' className="w-full   flex gap-3 justify-start  hover:text-muted-foreground">
                                         Create Channel
                                         <PlusCircle className="h-4 w-4 ml-auto" />
                                     </Button>
-
                                 </CreateNewChannel>
                             </>
                         )}
                         {isAdmin && (
                             <>
+                                <CreateCategory serverId={server.id}>
+                                    <Button size='lg' variant='ghost' className="w-full   flex gap-3 justify-start  hover:text-muted-foreground">
+                                        Create Category
+                                        <PlusCircle className="h-4 w-4 ml-auto" />
+                                    </Button>
+                                </CreateCategory>
                                 <Button size='lg' variant='ghost' className="w-full   flex gap-3 justify-start  hover:text-muted-foreground">
                                     Server Settings
                                     <Settings className="h-4 w-4 ml-auto" />
