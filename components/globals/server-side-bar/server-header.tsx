@@ -14,6 +14,9 @@ import { ServerWithMembersWithProfiles } from "@/lib/type";
 import { LeaveModal } from "@/components/dialogs/leave-modal";
 import { DeleteServerModal } from "@/components/dialogs/delete-server-modal";
 import { CreateCategory } from "@/components/dialogs/create-category";
+import { Fragment } from "react";
+import { ManageMemberDialog } from "@/components/dialogs/manage-member";
+import { MemberProvider } from "@/components/context/member-context";
 
 interface ServerHeaderProps {
     server: ServerWithMembersWithProfiles
@@ -25,7 +28,7 @@ export const ServerHeader = ({
 }: ServerHeaderProps) => {
     const isAdmin = role === MemberRole.ADMIN;
     const isModerator = isAdmin || role === MemberRole.MODERATOR;
-
+    // console.log(server);
     return (
         <Drawer>
             <DrawerTrigger asChild>
@@ -54,7 +57,7 @@ export const ServerHeader = ({
                     <Separator />
                     <div className="w-full rounded-md bg-[#F2F3F5] dark:bg-[#2B2D31] overflow-hidden p-2">
                         {isModerator && (
-                            <>
+                            <Fragment>
                                 <InviteDialog inviteCode={server.inviteCode} serverId={server.id} role={role}>
                                     <Button size='lg' variant='ghost' className="w-full   flex gap-3 justify-start    hover:text-muted-foreground text-indigo-600 dark:text-indigo-400">
                                         Invite People
@@ -67,35 +70,45 @@ export const ServerHeader = ({
                                         <PlusCircle className="h-4 w-4 ml-auto" />
                                     </Button>
                                 </CreateNewChannel>
-                            </>
+                            </Fragment>
                         )}
                         {isAdmin && (
-                            <>
+                            <Fragment>
+
                                 <CreateCategory serverId={server.id}>
                                     <Button size='lg' variant='ghost' className="w-full   flex gap-3 justify-start  hover:text-muted-foreground">
                                         Create Category
                                         <PlusCircle className="h-4 w-4 ml-auto" />
                                     </Button>
                                 </CreateCategory>
+
                                 <Button size='lg' variant='ghost' className="w-full   flex gap-3 justify-start  hover:text-muted-foreground">
                                     Server Settings
                                     <Settings className="h-4 w-4 ml-auto" />
                                 </Button>
-                                <Button size='lg' variant='ghost' className="w-full   flex gap-3 justify-start   hover:text-muted-foreground">
-                                    Manage Members
-                                    <Users className="h-4 w-4 ml-auto" />
-                                </Button>
+                                
+                                <MemberProvider>
+                                    <ManageMemberDialog serverId={server.id} serverName={server.name} you={server.members[0]} member_count={server._count.members}>
+                                        <Button size='lg' variant='ghost' className="w-full   flex gap-3 justify-start   hover:text-muted-foreground">
+                                            Manage Members
+                                            <Users className="h-4 w-4 ml-auto" />
+                                        </Button>
+                                    </ManageMemberDialog>
+                                </MemberProvider>
+
                                 <Separator className="my-2 bg-muted-foreground/10" />
+
                                 <DeleteServerModal serverId={server.id} serverName={server.name}>
                                     <Button size='lg' variant='ghost' className="w-full   flex gap-3 justify-start hover:text-muted-foreground text-rose-500">
                                         Delete Server
                                         <Trash className="h-4 w-4 ml-auto" />
                                     </Button>
                                 </DeleteServerModal>
-                            </>
+
+                            </Fragment>
                         )}
                         {!isAdmin && (
-                            <>
+                            <Fragment>
                                 {role !== 'GUEST' && (
                                     <Separator className="my-2 bg-muted-foreground/10" />
                                 )}
@@ -105,7 +118,7 @@ export const ServerHeader = ({
                                         <LogOut className="h-4 w-4 ml-auto" />
                                     </Button>
                                 </LeaveModal>
-                            </>
+                            </Fragment>
                         )}
                     </div>
                     <DrawerClose className="flex w-full justify-end">
