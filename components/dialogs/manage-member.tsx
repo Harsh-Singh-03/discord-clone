@@ -86,7 +86,7 @@ export const ManageMemberDialog = ({ children, serverId, serverName, you, member
                     <>
                         <div className="px-4 pb-2">
                             {/* Search form */}
-                            <Input className="bg-zinc-300/50 border-0 site-input text-black focus-visible:ring-0 focus-visible:ring-offset-0" placeholder="Search members" onChange={(e) => setSearch(e.target.value)} />
+                            <Input className="bg-zinc-300/50 border-0 site-input text-black focus-visible:ring-0 focus-visible:ring-offset-0" value={search} placeholder="Search members" onChange={(e) => setSearch(e.target.value)} />
                             {/* member list */}
                             <div className="grid gap-4 mt-4">
                                 <MemberData member={you} isAdmin={you.role} serverId={serverId} />
@@ -103,21 +103,25 @@ export const ManageMemberDialog = ({ children, serverId, serverName, you, member
                         </div>
 
                         <div className="flex justify-center gap-4">
-                            <Button
-                                variant='primary'
-                                size='sm'
-                                disabled={page < 2}
-                                onClick={() => setPage(page - 1)}
-                            >
-                                Prev
-                            </Button>
-                            <Button
-                                variant='primary'
-                                size='sm'
-                                disabled={member_count > (((page - 1) * 25) + membersData.length)}
-                                onClick={() => setPage(page + 1)} >
-                                Next
-                            </Button>
+                            {page > 1 && MemberData.length > 0 && (
+                                <Button
+                                    variant='primary'
+                                    size='sm'
+                                    disabled={page < 2}
+                                    onClick={() => setPage(page - 1)}
+                                >
+                                    Prev
+                                </Button>
+                            )}
+                            {MemberData.length >  1 && (
+                                <Button
+                                    variant='primary'
+                                    size='sm'
+                                    disabled={member_count > (((page - 1) * 25) + membersData.length)}
+                                    onClick={() => setPage(page + 1)} >
+                                    Next
+                                </Button>
+                            )}
                         </div>
                     </>
                 )}

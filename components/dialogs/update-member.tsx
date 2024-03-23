@@ -47,6 +47,7 @@ export const UpdateMemberModal = ({ children, serverId, memberId }: { children: 
                     const updatedMembers = membersData.map((member) =>
                         member.id === memberId ? { ...member, role: role } : member
                     );
+                    setRole('')
                     setmembersData(updatedMembers);
                     closeRef.current?.click()
                 }else{
