@@ -14,9 +14,11 @@ import { ServerWithMembersWithProfiles } from "@/lib/type";
 import { LeaveModal } from "@/components/dialogs/leave-modal";
 import { DeleteServerModal } from "@/components/dialogs/delete-server-modal";
 import { CreateCategory } from "@/components/dialogs/create-category";
-import { Fragment } from "react";
+import { Fragment, useRef } from "react";
 import { ManageMemberDialog } from "@/components/dialogs/manage-member";
 import { MemberProvider } from "@/components/context/member-context";
+import Link from "next/link";
+import { useRouter } from "next/navigation";
 
 interface ServerHeaderProps {
     server: ServerWithMembersWithProfiles
@@ -28,6 +30,15 @@ export const ServerHeader = ({
 }: ServerHeaderProps) => {
     const isAdmin = role === MemberRole.ADMIN;
     const isModerator = isAdmin || role === MemberRole.MODERATOR;
+
+    const navigation = useRouter()
+    const closeRef = useRef<HTMLButtonElement>(null)
+
+    const onRedirect = () => {
+        navigation.push(`/servers/${server.id}/settings`)
+        closeRef.current?.click()
+    }
+
     // console.log(server);
     return (
         <Drawer>
@@ -82,11 +93,11 @@ export const ServerHeader = ({
                                     </Button>
                                 </CreateCategory>
 
-                                <Button size='lg' variant='ghost' className="w-full   flex gap-3 justify-start  hover:text-muted-foreground">
+                                <Button size='lg' variant='ghost' className="w-full   flex gap-3 justify-start  hover:text-muted-foreground" onClick={onRedirect} >
                                     Server Settings
                                     <Settings className="h-4 w-4 ml-auto" />
                                 </Button>
-                                
+
                                 <MemberProvider>
                                     <ManageMemberDialog serverId={server.id} serverName={server.name} you={server.members[0]} member_count={server._count.members}>
                                         <Button size='lg' variant='ghost' className="w-full   flex gap-3 justify-start   hover:text-muted-foreground">
@@ -122,7 +133,7 @@ export const ServerHeader = ({
                         )}
                     </div>
                     <DrawerClose className="flex w-full justify-end">
-                        <Button variant='ghost'>Close</Button>
+                        <Button variant='ghost' ref={closeRef}>Close</Button>
                     </DrawerClose>
                 </div>
             </DrawerContent>

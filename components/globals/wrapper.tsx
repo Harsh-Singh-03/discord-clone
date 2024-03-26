@@ -1,7 +1,7 @@
 "use client"
 
 import { cn } from "@/lib/utils"
-import { useParams } from "next/navigation"
+import { useParams, usePathname } from "next/navigation"
 
 interface props{
     children: React.ReactNode,
@@ -10,10 +10,13 @@ interface props{
 
 export const Wrapper = ({children, classes}: props) => {
     const params = useParams()
+    const path = usePathname()
+    const isHide = path === `/servers/${params?.serverId}/settings` || !!params?.channelId
+
     return (
         <aside className={cn(
             "h-full flex flex-col border-r border-muted",
-            params?.channelId && 'hidden md:flex',
+            isHide && 'hidden md:flex',
             classes
 
         )}>

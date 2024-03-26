@@ -62,7 +62,7 @@ export const SideBar = async ({ user }: props) => {
                                 <AvatarFallback>{user.name[0]}</AvatarFallback>
                             </Avatar>
                         </PopoverTrigger>
-                        <PopoverContent side="right" className="px-2 pb-1">
+                        <PopoverContent side="right" className="px-2 pb-1 bg-white dark:bg-zinc-900">
                             <Usermenu user={user} />
                         </PopoverContent>
                     </Popover>

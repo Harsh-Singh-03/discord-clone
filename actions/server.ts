@@ -185,6 +185,7 @@ export const updateServerInfo = async ({ serverId, values, path }: updateProps) 
             name: values.name,
             bio: values.bio
         };
+
         await db.server.update({
             where: { id: serverId, userId: res.user.id },
             data: { ...validData }

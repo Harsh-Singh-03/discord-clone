@@ -1,6 +1,9 @@
 import { fetchUser } from "@/lib/auth-service"
 import { db } from "@/lib/db"
 import { redirect } from "next/navigation"
+import { Tab } from "./_component/tab"
+import { SettingHeader } from "./_component/header"
+import { Separator } from "@/components/ui/separator"
 
 interface props {
     params: {
@@ -14,10 +17,21 @@ const page = async ({params}: props) => {
     const serverData = await db.server.findUnique({
         where: {id: params.serverId, userId: res.user.id}
     })
-    if(!serverData || serverData.userId !== res.user.id) redirect(`/servers/${params.serverId}`)
+    if(!serverData) redirect('/')
+
+    if(serverData.userId !== res.user.id) redirect(`/servers/${params.serverId}`)
 
     return (
-        <p>settings</p>
+        <div className="w-full bg-white dark:bg-[#313338] h-full overflow-scroll">
+            <SettingHeader serverName={serverData.name} />
+
+            <Separator />
+
+            <div className="p-4 md:p-6">
+                <Tab server={serverData} />
+            </div>
+
+        </div>
     )
 }
 

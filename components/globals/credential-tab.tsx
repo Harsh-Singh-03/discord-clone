@@ -90,7 +90,7 @@ export const CredentialsTab = ({ id, initialEmail, initialUsername }: props) => 
     }
 
     return (
-        <div className="rounded-md bg-muted p-4 md:p-6">
+        <div className="rounded-md p-4 md:p-6">
              <div className="flex gap-3 justify-end items-center">
                 <TooltipComponent label="Will sent an email for reset pass">
                     <Info className="text-muted-foreground w-5 h-5" />
@@ -108,7 +108,7 @@ export const CredentialsTab = ({ id, initialEmail, initialUsername }: props) => 
                         disabled={isPending}
                         value={email}
                         onChange={(e) => setEmail(e.target.value)}
-                        className="resize-none border-zinc-300 rounded-md dark:border-white/20 bg-muted"
+                        className="resize-none border-zinc-300 rounded-md dark:border-white/20 bg-muted dark:bg-zinc-600/75"
                     />
                     {initialEmail !== email && (
                         <div className="w-full grid place-items-end">
@@ -128,7 +128,7 @@ export const CredentialsTab = ({ id, initialEmail, initialUsername }: props) => 
                         onChange={(e) => setUsername(e.target.value)}
                         minLength={3}
                         maxLength={30}
-                        className="resize-none rounded-md border-zinc-300 dark:border-white/20 bg-muted"
+                        className="resize-none rounded-md border-zinc-300 dark:border-white/20 bg-muted dark:bg-zinc-600/75"
                     />
                     <div className="flex items-center gap-2 text-muted-foreground ml-2">
                         <Info className='w-4 h-4' />

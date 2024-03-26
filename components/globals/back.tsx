@@ -5,7 +5,7 @@ import { Button } from "../ui/button"
 import { useRouter } from "next/navigation"
 import { cn } from "@/lib/utils"
 
-export const Back = ({ serverId }: { serverId: string }) => {
+export const Back = ({ serverId }: { serverId?: string }) => {
     const router = useRouter()
     const backWords = () => {
         if (serverId) {

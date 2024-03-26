@@ -36,7 +36,7 @@ export const PersonalTab = ({ initialImage, initialName }: props) => {
 
     const onSubmit = (e: FormEvent) => {
         e.preventDefault()
-        if(!name || !isValidName(name) || name === initialName) {
+        if (!name || !isValidName(name) || name === initialName) {
             closeRef?.current?.click();
             toast.error("Enter valid name!")
             return
@@ -68,48 +68,48 @@ export const PersonalTab = ({ initialImage, initialName }: props) => {
     }
 
     return (
-        <div className="rounded-md bg-muted p-4 w-[calc(100vw-58px)] md:w-full overflow-x-hidden">
-        <form  className="space-y-4" onSubmit={onSubmit}>
-            <div className="space-y-2">
-                <p className="text-sm font-medium">Name</p>
-                <Input
-                    placeholder="User input"
-                    required
-                    disabled={isPending}
-                    value={name}
-                    onChange={(e) => setName(e.target.value)}
-                    minLength={3}
-                    className="resize-none rounded-md border-zinc-300 dark:border-white/20 bg-muted"
-                />
-            </div>
-            <div className="space-y-2">
-                <p className="text-sm font-medium">
-                    Image
-                </p>
-                {image ? (
-                    <div className="relative md:max-w-xs aspect-video rounded-xl overflow-hidden border border-white/10">
-                        <div className="absolute top-2 right-2 z-[10]">
-                            <TooltipComponent label="Remove thumbnail"  position="left">
-                                <Button
-                                    type="button"
-                                    disabled={isPending}
-                                    onClick={onRemove}
-                                    className="h-auto w-auto p-1.5"
-                                >
-                                    <Trash className="h-4 w-4" />
-                                </Button>
-                            </TooltipComponent>
+        <div className="rounded-md p-4 w-[calc(100vw-58px)] md:w-full overflow-x-hidden">
+            <form className="space-y-4" onSubmit={onSubmit}>
+                <div className="space-y-2">
+                    <p className="text-sm font-medium">Name</p>
+                    <Input
+                        placeholder="User input"
+                        required
+                        disabled={isPending}
+                        value={name}
+                        onChange={(e) => setName(e.target.value)}
+                        minLength={3}
+                        className="resize-none rounded-md border-zinc-300 dark:border-white/20 bg-muted dark:bg-zinc-600/75"
+                    />
+                </div>
+                <div className="space-y-2">
+                    <p className="text-sm font-medium">
+                        Image
+                    </p>
+                    {image ? (
+                        <div className="relative md:max-w-xs aspect-video rounded-xl overflow-hidden border border-white/10">
+                            <div className="absolute top-2 right-2 z-[10]">
+                                <TooltipComponent label="Remove thumbnail" position="left">
+                                    <Button
+                                        type="button"
+                                        disabled={isPending}
+                                        onClick={onRemove}
+                                        className="h-auto w-auto p-1.5"
+                                    >
+                                        <Trash className="h-4 w-4" />
+                                    </Button>
+                                </TooltipComponent>
+                            </div>
+                            <Image
+                                alt="Thumbnail"
+                                src={image}
+                                fill
+                                className="object-cover"
+                            />
                         </div>
-                        <Image
-                            alt="Thumbnail"
-                            src={image}
-                            fill
-                            className="object-cover"
-                        />
-                    </div>
-                ) : (
-                    <div className="w-full overflow-x-hidden">
-                          <UploadDropzone
+                    ) : (
+                        <div className="w-full overflow-x-hidden">
+                            <UploadDropzone
                                 className="dark:border-white/20 border-zinc-200 border-2 w-full"
                                 endpoint="imgfile"
                                 onClientUploadComplete={(res: any) => {
@@ -117,24 +117,24 @@ export const PersonalTab = ({ initialImage, initialName }: props) => {
                                 }}
 
                             />
-                    </div>
-                )}
-            </div>
-            <div className="flex justify-between">
-                <DialogClose ref={closeRef} asChild>
-                    <Button type="button" variant="ghost" className="hover:bg-background">
-                        Close
+                        </div>
+                    )}
+                </div>
+                <div className="flex justify-between">
+                    <DialogClose ref={closeRef} asChild>
+                        <Button type="button" variant="ghost" className="hover:bg-background">
+                            Close
+                        </Button>
+                    </DialogClose>
+                    <Button
+                        disabled={isPending}
+                        type="submit"
+                        variant="primary"
+                    >
+                        Save
                     </Button>
-                </DialogClose>
-                <Button
-                    disabled={isPending}
-                    type="submit"
-                    variant="primary"
-                >
-                    Save
-                </Button>
-            </div>
-        </form>
-    </div>
+                </div>
+            </form>
+        </div>
     )
 }

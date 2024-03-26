@@ -31,7 +31,7 @@ export const UserModal = ({ user, children }: {user: baseUserType, children: Rea
                 {children}
             </DialogTrigger>
 
-            <DialogContent className="rounded-md max-w-3xl p-3 md:p-6">
+            <DialogContent className="rounded-md max-w-3xl p-3 md:p-6 bg-white dark:bg-[#313338]">
 
                 <DialogHeader>
                     <DialogTitle className="text-center tracking-wider font-semibold">

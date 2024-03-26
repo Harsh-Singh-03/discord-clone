@@ -38,7 +38,7 @@ export const DeleteServerModal = ({ children, serverId, serverName }: props) => 
 
     return (
         <Dialog>
-            <DialogTrigger className="w-full">
+            <DialogTrigger className="w-full" asChild>
                 {children}
             </DialogTrigger>
             <DialogContent className="p-0 overflow-hidden text-black bg-white">
