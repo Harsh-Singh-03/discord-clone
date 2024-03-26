@@ -34,7 +34,7 @@ export const Tab = ({server}: settingsProps) => {
             </TabsContent>
 
             <TabsContent value="channels">
-                <ChannelTab />
+                <ChannelTab id={server.id} />
             </TabsContent>
         </Tabs>
     )
