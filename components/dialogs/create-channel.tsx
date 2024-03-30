@@ -1,26 +1,28 @@
 "use client"
 
-import { FormEvent, useRef, useState, useTransition } from "react"
+import { FormEvent, useEffect, useRef, useState, useTransition } from "react"
 import { Dialog, DialogClose, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "../ui/dialog"
 import { Input } from "../ui/input"
 import { Label } from "../ui/label"
 import { Button } from "../ui/button"
 import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger, SelectValue } from "../ui/select"
-import { Category, ChannelAccess, ChannelType } from "@prisma/client"
+import { Channel, ChannelAccess, ChannelType } from "@prisma/client"
 import { isValidName } from "@/lib/utils"
 import { toast } from "sonner"
 import { createChannelInServer } from "@/actions/channel"
 import { usePathname } from "next/navigation"
 import { Switch } from "../ui/switch"
 import { Info } from "lucide-react"
+import { useAppContext } from "../context"
 
 interface props {
     serverId: string,
     children: React.ReactNode,
-    categories: Category[]
+    channelData?: Channel
 }
-export const CreateNewChannel = ({ serverId, children, categories }: props) => {
+export const CreateNewChannel = ({ serverId, children, channelData }: props) => {
 
+    const { sideBarData } = useAppContext()
     const [isPending, startTransition] = useTransition()
     const [name, setName] = useState("")
     const [categoryId, setCategoryId] = useState("")
@@ -30,9 +32,19 @@ export const CreateNewChannel = ({ serverId, children, categories }: props) => {
     const closeRef = useRef<HTMLButtonElement>(null)
     const path = usePathname()
 
+    useEffect(() => {
+        if (!!channelData) {
+            setName(channelData.name)
+            setCategoryId(channelData.categoryId)
+            setType(channelData.type)
+            setWhoCanMessage(channelData.whoCanMessage)
+            setIsPrivate(channelData.isPrivate)
+        }
+    }, [channelData])
+
     const onSubmit = (e: FormEvent) => {
         e.preventDefault()
-        if(!categoryId){
+        if (!categoryId) {
             toast.error('Select category')
             return
         }
@@ -54,6 +66,8 @@ export const CreateNewChannel = ({ serverId, children, categories }: props) => {
         })
     }
 
+    const titleText = !!channelData ? 'Update' : 'Create'
+
     return (
         <Dialog>
             <DialogTrigger asChild>
@@ -62,7 +76,7 @@ export const CreateNewChannel = ({ serverId, children, categories }: props) => {
             <DialogContent className="text-black bg-white p-0 overflow-hidden">
                 <DialogHeader className="px-4 md:px-6 pt-4 md:pt-6">
                     <DialogTitle className="text-2xl text-center font-bold">
-                        Create Channel
+                        {titleText} Channel
                     </DialogTitle>
                     <DialogDescription className="text-center text-zinc-500">
                         Give your channel a personality with a name and an type and set accessbility. You can always change it later.
@@ -74,14 +88,14 @@ export const CreateNewChannel = ({ serverId, children, categories }: props) => {
                         <Input className="bg-zinc-300/50 border-0 site-input text-black focus-visible:ring-0 focus-visible:ring-offset-0" placeholder="Enter channel name" value={name} onChange={(e) => setName(e.target.value)} disabled={isPending} />
 
                         <Label className="font-medium mt-2" >Select Category:</Label>
-                        <Select disabled={isPending} onValueChange={(e: string) => setCategoryId(e)}>
+                        <Select disabled={isPending} defaultValue={categoryId} onValueChange={(e: string) => setCategoryId(e)}>
                             <SelectTrigger className="w-full bg-zinc-300/50 border-0"  >
                                 <SelectValue placeholder="Select category" />
                             </SelectTrigger>
                             <SelectContent className="bg-white text-black border-0">
                                 <SelectGroup>
                                     <SelectLabel>Server Categories</SelectLabel>
-                                    {categories.map(item => {
+                                    {sideBarData.map(item => {
                                         return (
                                             <SelectItem value={item.id} key={item.id}>{item.title}</SelectItem>
                                         )
@@ -108,9 +122,9 @@ export const CreateNewChannel = ({ serverId, children, categories }: props) => {
                         {type === ChannelType.TEXT && (
                             <>
                                 <Label className="font-medium mt-2" >Who can message:</Label>
-                                <Select disabled={isPending} defaultValue={whoCanMessage} 
-                                  onValueChange={(e: ChannelAccess) => setWhoCanMessage(e)}
-                                 >
+                                <Select disabled={isPending} defaultValue={whoCanMessage}
+                                    onValueChange={(e: ChannelAccess) => setWhoCanMessage(e)}
+                                >
                                     <SelectTrigger className="w-full bg-zinc-300/50 border-0"  >
                                         <SelectValue placeholder="Select who can message" />
                                     </SelectTrigger>
@@ -140,9 +154,12 @@ export const CreateNewChannel = ({ serverId, children, categories }: props) => {
                         </div>
                     </div>
 
-                    <DialogFooter className="bg-gray-200 p-4 md:p-6">
-                        <Button variant='primary' type="submit" disabled={isPending}>Create</Button>
-                    </DialogFooter>
+                    <div className="bg-gray-200 p-4 md:p-6 gap-2 flex justify-end">
+                        {!!channelData && (
+                            <Button variant='destructive' type='button' size='sm' disabled={isPending}>Delete</Button>
+                        )}
+                        <Button variant='primary' size='sm' type="submit" disabled={isPending}>{titleText}</Button>
+                    </div>
                 </form>
                 <DialogClose className="hidden">
                     <Button ref={closeRef} className="hidden">Close</Button>

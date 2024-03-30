@@ -16,8 +16,6 @@ import { DeleteServerModal } from "@/components/dialogs/delete-server-modal";
 import { CreateCategory } from "@/components/dialogs/create-category";
 import { Fragment, useRef } from "react";
 import { ManageMemberDialog } from "@/components/dialogs/manage-member";
-import { MemberProvider } from "@/components/context/member-context";
-import Link from "next/link";
 import { useRouter } from "next/navigation";
 
 interface ServerHeaderProps {
@@ -75,7 +73,7 @@ export const ServerHeader = ({
                                         <UserPlus className="h-4 w-4 ml-auto" />
                                     </Button>
                                 </InviteDialog>
-                                <CreateNewChannel serverId={server.id} categories={server.Category} >
+                                <CreateNewChannel serverId={server.id} >
                                     <Button size='lg' variant='ghost' className="w-full   flex gap-3 justify-start  hover:text-muted-foreground">
                                         Create Channel
                                         <PlusCircle className="h-4 w-4 ml-auto" />
@@ -98,14 +96,12 @@ export const ServerHeader = ({
                                     <Settings className="h-4 w-4 ml-auto" />
                                 </Button>
 
-                                <MemberProvider>
-                                    <ManageMemberDialog serverId={server.id} serverName={server.name} you={server.members[0]} member_count={server._count.members}>
-                                        <Button size='lg' variant='ghost' className="w-full   flex gap-3 justify-start   hover:text-muted-foreground">
-                                            Manage Members
-                                            <Users className="h-4 w-4 ml-auto" />
-                                        </Button>
-                                    </ManageMemberDialog>
-                                </MemberProvider>
+                                <ManageMemberDialog serverId={server.id} serverName={server.name} you={server.members[0]} member_count={server._count.members}>
+                                    <Button size='lg' variant='ghost' className="w-full   flex gap-3 justify-start   hover:text-muted-foreground">
+                                        Manage Members
+                                        <Users className="h-4 w-4 ml-auto" />
+                                    </Button>
+                                </ManageMemberDialog>
 
                                 <Separator className="my-2 bg-muted-foreground/10" />
 

@@ -1,11 +1,11 @@
 import type { Metadata } from 'next'
 import '@/app/globals.css'
-import { Fragment, Suspense } from 'react'
+import { Suspense } from 'react'
 import { ServerSideBar, ServerSideBarSkeleton } from '@/components/globals/server-side-bar'
 import { fetchUser } from '@/lib/auth-service'
 import { redirect } from 'next/navigation'
 import { db } from '@/lib/db'
-import { MemberProvider } from '@/components/context/member-context'
+import { ContextProvider } from '@/components/context'
 
 export const metadata: Metadata = {
     title: 'Servers | Discord',
@@ -36,7 +36,7 @@ export default async function RootLayout({
     if (!data) redirect('/')
 
     return (
-        <Fragment>
+        <ContextProvider>
 
             <Suspense fallback={<ServerSideBarSkeleton />}>
                 <ServerSideBar serverId={data.id} userId={res.user.id} />
@@ -46,7 +46,7 @@ export default async function RootLayout({
                 {children}
             </section>
 
-        </Fragment>
+        </ContextProvider>
 
 
     )

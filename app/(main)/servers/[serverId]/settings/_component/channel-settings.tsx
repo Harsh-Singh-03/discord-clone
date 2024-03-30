@@ -1,12 +1,14 @@
 "use client"
 
+import { CreateNewChannel } from "@/components/dialogs/create-channel"
 import { Draggable, Droppable } from "@hello-pangea/dnd"
 import { Channel, ChannelType } from "@prisma/client"
-import { Edit, GanttChart, GripVertical, Hash, Mic, Video } from "lucide-react"
+import { Edit, GripVertical, Hash, Mic, Video } from "lucide-react"
 
 interface props {
     data: Channel[],
-    id: string
+    id: string,
+    serverId: string,
 }
 
 const iconMap = {
@@ -15,7 +17,7 @@ const iconMap = {
     [ChannelType.VIDEO]: Video,
 }
 
-export const ChannelSettings = ({ data, id }: props) => {
+export const ChannelSettings = ({ data, id, serverId }: props) => {
 
     return (
         <Droppable droppableId={id.toString()} type="card">
@@ -33,9 +35,11 @@ export const ChannelSettings = ({ data, id }: props) => {
                                                 <p className="text-sm m-0 font-medium">{item.name}</p>
                                             </div>
                                             <div className="flex items-center gap-3">
-                                                <button>
-                                                    <Edit className="w-4 h-4 text-muted-foreground hover:text-primary" />
-                                                </button>
+                                                <CreateNewChannel serverId={serverId} channelData={item} >
+                                                    <button>
+                                                        <Edit className="w-4 h-4 text-muted-foreground hover:text-primary" />
+                                                    </button>
+                                                </CreateNewChannel>
                                                 <button>
                                                     <GripVertical className="w-4 h-4 text-muted-foreground hover:text-primary" />
                                                 </button>

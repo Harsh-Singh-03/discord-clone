@@ -11,7 +11,7 @@ import { getServerMember } from "@/actions/server"
 import { toast } from "sonner"
 import { Separator } from "../ui/separator"
 import { MemberData } from "../globals/server-side-bar/member-data"
-import { useMembers } from "../context/member-context"
+import { useAppContext } from "../context"
 import { Loader2 } from "lucide-react"
 
 interface props {
@@ -26,7 +26,7 @@ export const ManageMemberDialog = ({ children, serverId, serverName, you, member
 
     const closeRef = useRef<HTMLButtonElement>(null)
     const [isLoad, setIsLoad] = useState(false)
-    const { membersData, setmembersData } = useMembers()
+    const { membersData, setmembersData } = useAppContext()
     const [search, setSearch] = useState<string>('')
     const [page, setPage] = useState(1)
 

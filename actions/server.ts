@@ -99,35 +99,6 @@ export const getServerdata = async (serverId: string, userId: string) => {
     }
 }
 
-export const getServerSettings = async (serverId: string) => {
-    try {
-        const data = await db.server.findUnique({
-            where: {
-                id: serverId,
-            },
-            include: {
-                Category: {
-                    include: {
-                        channels: {
-                            orderBy: {
-                                createdAt: 'desc'
-                            }
-                        },
-                    },
-                    orderBy: {
-                        createdAt: 'desc'
-                    }
-                },
-            }
-        })
-        // console.log(data)
-        if (!data) return { success: false }
-        return { success: true, server: data }
-    } catch {
-        return { success: false }
-    }
-}
-
 export const generateNewInviteCode = async (serverId: string) => {
     try {
         const res = await fetchUser()

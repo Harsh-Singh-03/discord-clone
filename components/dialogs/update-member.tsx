@@ -7,7 +7,7 @@ import { Label } from "../ui/label"
 import { Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue } from "../ui/select"
 import { MemberRole } from "@prisma/client"
 import { Separator } from "../ui/separator"
-import { useMembers } from "../context/member-context"
+import { useAppContext } from "../context"
 import { removeMember, updateRole } from "@/actions/server"
 import { toast } from "sonner"
 
@@ -17,7 +17,7 @@ export const UpdateMemberModal = ({ children, serverId, memberId }: { children: 
 
     const [role, setRole] = useState<MemberRole | ''>('')
     const [isPending, startTransition] = useTransition()
-    const { membersData, setmembersData } = useMembers()
+    const { membersData, setmembersData } = useAppContext()
 
     const onKick = async () => {
         console.log(serverId)

@@ -2,59 +2,17 @@
 "use client"
 
 import { DragDropContext, Draggable, Droppable } from "@hello-pangea/dnd";
-import { useEffect, useState, useTransition } from "react";
 import { ChannelSettings } from "./channel-settings";
-import { Edit2, GripIcon, GripVertical, Loader2 } from "lucide-react";
-import { getServerSettings, getServerdata } from "@/actions/server";
-import { toast } from "sonner";
-import { Category, Channel, Server } from "@prisma/client";
-
-interface dataProp {
-    channels: Channel[],
-    id: string;
-    title: string;
-    userId: string;
-    serverId: string;
-    createdAt: Date;
-    updatedAt: Date;
-}
+import { Edit2, GripIcon } from "lucide-react";
+import { CreateCategory } from "@/components/dialogs/create-category";
+import { useAppContext } from "@/components/context";
 
 export const ChannelTab = ({ id }: { id: string }) => {
 
-    const [isPending, setIsPending] = useState(true)
-
-    const [data, setData] = useState<dataProp[] | null>(null);
-
-    useEffect(() => {
-        const getData = async () => {
-            try {
-                const res = await getServerSettings(id)
-                if (res.success) {
-                    if(res.server && !!res.server.Category && res.server.Category.length > 0) {
-                        setData(res.server.Category)
-                    }
-                } else {
-                    toast.error('Some error occurred')
-                }
-            } catch (error) {
-                toast.error('Something went wrong')
-            } finally {
-                setIsPending(false)
-            }
-        }
-        getData()
-    }, [])
+    const { sideBarData } = useAppContext()
 
     const onEnd = () => {
 
-    }
-
-    if (isPending) {
-        return (
-            <div className="w-full grid place-items-center h-36">
-                <Loader2 className="w-10 h-10 text-muted-foreground animate-spin" />
-            </div>
-        )
     }
 
     return (
@@ -68,18 +26,18 @@ export const ChannelTab = ({ id }: { id: string }) => {
                 </div>
             </div>
 
-            {!isPending && (!data || data.length === 0) && (
+            {(!sideBarData || sideBarData.length === 0) && (
                 <p className="text-sm my-6 text-center text-muted-foreground">Categories & channels not found</p>
             )}
             {/* Draggble list */}
-            {!isPending && data && data.length > 0 && (
+            {!!sideBarData && sideBarData.length > 0 && (
                 <DragDropContext onDragEnd={onEnd}>
                     <Droppable droppableId="lists" type="list" direction="vertical">
                         {(provided) => (
                             <div className="w-full h-auto grid gap-4 md:gap-6"
                                 {...provided.droppableProps}
                                 ref={provided.innerRef}  >
-                                {data.map((item, index) => {
+                                {sideBarData.map((item, index) => {
                                     return (
                                         <Draggable draggableId={item.id} index={index} key={item.id}>
                                             {(provided) => (
@@ -93,12 +51,14 @@ export const ChannelTab = ({ id }: { id: string }) => {
                                                                 <p className="text-base m-0 font-medium">{item.title}</p>
                                                             </div>
                                                             <div className="flex items-center gap-3">
-                                                                <button>
-                                                                    <Edit2 className="w-4 h-4 text-muted-foreground hover:text-primary mr-2" />
-                                                                </button>
+                                                                <CreateCategory serverId={id} isEdit={true} cat={{ id: item.id, title: item.title }}>
+                                                                    <button>
+                                                                        <Edit2 className="w-4 h-4 text-muted-foreground hover:text-primary mr-2" />
+                                                                    </button>
+                                                                </CreateCategory>
                                                             </div>
                                                         </div>
-                                                        <ChannelSettings data={item.channels} id={item.id} />
+                                                        <ChannelSettings data={item.channels} id={item.id} serverId={id} />
                                                     </div>
                                                 </div>
                                             )}

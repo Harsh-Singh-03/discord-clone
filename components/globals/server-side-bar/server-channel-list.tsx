@@ -1,9 +1,13 @@
+"use client"
+
 import { Category, Channel, MemberRole } from "@prisma/client"
 import { ServerChannel } from "./server-channel"
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion"
 import { ScrollArea } from "@/components/ui/scroll-area"
 import { Skeleton } from "@/components/ui/skeleton"
 import { Separator } from "@/components/ui/separator"
+import { useEffect } from "react"
+import { useAppContext } from "@/components/context"
 
 interface props {
     groupData: (Category & {channels: Channel[], _count: {channels: number}})[],
@@ -13,6 +17,12 @@ interface props {
 export const ServerChannelList = ({ groupData, role }: props) => {
 
     let defaultOpen: string[] = []
+
+    const { setSideBarData } = useAppContext()
+
+    useEffect(() => {
+        setSideBarData(groupData)
+    }, [groupData])
 
     return (
         <ScrollArea className="flex-1 px-4">

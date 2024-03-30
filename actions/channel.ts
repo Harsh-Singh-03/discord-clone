@@ -27,6 +27,7 @@ export const createChannelInServer = async ({categoryId, serverId, name, type, p
                 serverId: serverId
             }
         })
+        console.log(response)
         if(!response) return {success: false, message: "Invalid request"}
         if(!response.role || response.role === MemberRole.GUEST) return {success: false, message: 'Unauthorized!'}
 
