@@ -8,6 +8,7 @@ import { Skeleton } from "@/components/ui/skeleton"
 import { Separator } from "@/components/ui/separator"
 import { useEffect } from "react"
 import { useAppContext } from "@/components/context"
+import { Loader2 } from "lucide-react"
 
 interface props {
     groupData: (Category & {channels: Channel[], _count: {channels: number}})[],
@@ -18,15 +19,23 @@ export const ServerChannelList = ({ groupData, role }: props) => {
 
     let defaultOpen: string[] = []
 
-    const { setSideBarData } = useAppContext()
+    const { setSideBarData, sideBarData } = useAppContext()
 
     useEffect(() => {
         setSideBarData(groupData)
     }, [groupData])
 
+    if(!sideBarData) {
+        return (
+            <div className="gird place-items-center my-12">
+                <Loader2 className="w-6 text-white h-6 animate-spin" />
+            </div>
+        )
+    }
+
     return (
         <ScrollArea className="flex-1 px-4">
-            {groupData.map((data, index) => {
+            {sideBarData.map((data, index) => {
                 defaultOpen = defaultOpen.concat(`item-${index}`)
                 return (
                     <div key={index} className="w-full">

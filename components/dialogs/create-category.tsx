@@ -8,7 +8,7 @@ import React, { FormEvent, useEffect, useRef, useState, useTransition } from "re
 import { isValidName } from "@/lib/utils"
 import { toast } from "sonner"
 import { usePathname } from "next/navigation"
-import { createCategoryInServer, updateCategory } from "@/actions/category"
+import { createCategoryInServer, deleteCategory, updateCategory } from "@/actions/category"
 
 interface CategoryProps {
     children: React.ReactNode,
@@ -66,6 +66,26 @@ export const CreateCategory = ({ children, serverId, cat, isEdit }: CategoryProp
         })
     }
 
+    const onDelete = () => {
+        if(!cat || !cat.id || !serverId) {
+            toast.error("Invalid category") 
+            return
+        }
+
+        startTransition(() => {
+            deleteCategory(cat.id, serverId)
+                .then((data) => {
+                    if (data.success) {
+                        toast.success(data.message)
+                        setTitle('')
+                        closeRef.current?.click()
+                    } else {
+                        toast.error(data.message)
+                    }
+                }).catch(() => toast.error("Something went wrong"))
+        })
+    }
+
     const onSubmit = async (e: FormEvent) => {
         e.preventDefault()
         if (!isValidName(title)) {
@@ -104,7 +124,7 @@ export const CreateCategory = ({ children, serverId, cat, isEdit }: CategoryProp
                     </div>
                     <DialogFooter className="bg-gray-200 p-4 md:p-6">
                         {isEdit === true && (
-                            <Button variant='destructive' size='sm' type="button" disabled={isPending}>Delete</Button>
+                            <Button variant='destructive' size='sm' type="button" onClick={onDelete} disabled={isPending}>Delete</Button>
                         )}
                         <Button variant='primary' type="submit" size='sm' disabled={isPending}>{t}</Button>
                     </DialogFooter>

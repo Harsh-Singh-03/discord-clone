@@ -9,7 +9,7 @@ import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrig
 import { Channel, ChannelAccess, ChannelType } from "@prisma/client"
 import { isValidName } from "@/lib/utils"
 import { toast } from "sonner"
-import { createChannelInServer } from "@/actions/channel"
+import { createChannelInServer, deleteChannel, updateChannelInfo } from "@/actions/channel"
 import { usePathname } from "next/navigation"
 import { Switch } from "../ui/switch"
 import { Info } from "lucide-react"
@@ -42,16 +42,7 @@ export const CreateNewChannel = ({ serverId, children, channelData }: props) => 
         }
     }, [channelData])
 
-    const onSubmit = (e: FormEvent) => {
-        e.preventDefault()
-        if (!categoryId) {
-            toast.error('Select category')
-            return
-        }
-        if (!isValidName(name) || !type) {
-            toast.error('Invalid field')
-            return
-        }
+    const onCreate = () => {
         startTransition(() => {
             createChannelInServer({ serverId, name, type, path: path || '', isPrivate, whoCanAccess: whoCanMessage, categoryId })
                 .then((data) => {
@@ -64,6 +55,65 @@ export const CreateNewChannel = ({ serverId, children, channelData }: props) => 
                     }
                 }).catch(() => toast.error("Something went wrong"))
         })
+    }
+    
+    const onUpdate = () => {
+        if(!channelData || !channelData.id){
+            toast.error('invalid request')
+            return 
+        }
+        startTransition(() => {
+            updateChannelInfo({ serverId, values: {id: channelData.id, name, type,isPrivate, whoCanMessage: whoCanMessage, categoryId} })
+                .then((data) => {
+                    if (data.success) {
+                        toast.success(data.message)
+                        setName("")
+                        closeRef.current?.click()
+                    } else {
+                        toast.error(data.message)
+                    }
+                }).catch(() => toast.error("Something went wrong"))
+        })
+    }
+
+    const onDelete = () => {
+        if(!channelData || !channelData.id){
+            toast.error('Invalid request')
+            return
+        }
+
+        startTransition(() => {
+            deleteChannel(channelData.id, serverId)
+               .then((res) => {
+                    if (res && res.success) {
+                        toast.success(res.message)
+                        closeRef.current?.click()
+                    } else {
+                        toast.error(res.message)
+                    }
+                }).catch((err) => {
+                    toast.error('Internal Error')
+                })
+        })
+    }
+
+    const onSubmit = (e: FormEvent) => {
+        e.preventDefault()
+        if (!categoryId) {
+            toast.error('Select category')
+            return
+        }
+        if (!isValidName(name) || !type) {
+            toast.error('Invalid field')
+            return
+        }
+
+        if(!!channelData && channelData.id){
+            onUpdate()
+        }else{
+            onCreate()
+        }
+        
     }
 
     const titleText = !!channelData ? 'Update' : 'Create'
@@ -156,7 +206,7 @@ export const CreateNewChannel = ({ serverId, children, channelData }: props) => 
 
                     <div className="bg-gray-200 p-4 md:p-6 gap-2 flex justify-end">
                         {!!channelData && (
-                            <Button variant='destructive' type='button' size='sm' disabled={isPending}>Delete</Button>
+                            <Button variant='destructive' type='button' size='sm' onClick={onDelete} disabled={isPending}>Delete</Button>
                         )}
                         <Button variant='primary' size='sm' type="submit" disabled={isPending}>{titleText}</Button>
                     </div>

@@ -4,7 +4,6 @@ import { fetchUser } from "@/lib/auth-service"
 import { db } from "@/lib/db"
 import { isValidName } from "@/lib/utils"
 import { MemberRole, Server } from "@prisma/client";
-// import { getServerSession } from "next-auth";
 import { revalidatePath } from "next/cache";
 import { v4 as uuidv4 } from "uuid";
 
@@ -30,10 +29,12 @@ export const createServer = async (name: string, imageUrl: string) => {
                     create: [{
                         title: 'Uncategorized',
                         userId: res.user.id,
+                        order: 1,
                         channels: {
                             create: [{
                                 name: 'general',
-                                userId: res.user.id
+                                userId: res.user.id,
+                                order: 1,
                             }]
                         }
                     }]
@@ -79,13 +80,13 @@ export const getServerdata = async (serverId: string, userId: string) => {
                     include: {
                         channels: {
                             orderBy: {
-                                createdAt: 'desc'
+                                order: 'asc'
                             }
                         },
                         _count: true,
                     },
                     orderBy: {
-                        createdAt: 'desc'
+                        order: 'asc'
                     }
                 },
                 _count: true

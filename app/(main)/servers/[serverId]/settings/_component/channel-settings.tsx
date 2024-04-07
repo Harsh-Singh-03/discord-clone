@@ -1,6 +1,7 @@
 "use client"
 
 import { CreateNewChannel } from "@/components/dialogs/create-channel"
+import { cn } from "@/lib/utils"
 import { Draggable, Droppable } from "@hello-pangea/dnd"
 import { Channel, ChannelType } from "@prisma/client"
 import { Edit, GripVertical, Hash, Mic, Video } from "lucide-react"
@@ -9,6 +10,7 @@ interface props {
     data: Channel[],
     id: string,
     serverId: string,
+    disable: boolean,
 }
 
 const iconMap = {
@@ -17,19 +19,22 @@ const iconMap = {
     [ChannelType.VIDEO]: Video,
 }
 
-export const ChannelSettings = ({ data, id, serverId }: props) => {
+export const ChannelSettings = ({ data, id, serverId, disable }: props) => {
 
     return (
-        <Droppable droppableId={id.toString()} type="card">
+        <Droppable droppableId={id.toString()} type="channel">
             {(provided1) => (
                 <div ref={provided1.innerRef} {...provided1.droppableProps} className="grid ml-2 md:ml-4 gap-2 mt-2">
                     {data.map((item, index) => {
                          const Icon = iconMap[item.type];
                         return (
-                            <Draggable draggableId={item.id.toString()} index={index} key={item.id}>
+                            <Draggable draggableId={item.id.toString()} index={index} key={item.id} isDragDisabled={disable}>
                                 {(provided2) => (
                                     <div {...provided2.draggableProps} {...provided2.dragHandleProps} ref={provided2.innerRef}>
-                                        <div className="p-3 bg-zinc-50 dark:bg-zinc-600/40 rounded-md w-full flex items-center justify-between">
+                                        <div className={cn(
+                                            "p-3 bg-zinc-50 dark:bg-zinc-600/40 rounded-md w-full flex items-center justify-between",
+                                            disable && "opacity-30"
+                                        )}>
                                             <div className="flex gap-2 items-center">
                                                 <Icon className="w-4 h-4" />
                                                 <p className="text-sm m-0 font-medium">{item.name}</p>

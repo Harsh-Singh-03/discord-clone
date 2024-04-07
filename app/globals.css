@@ -88,7 +88,7 @@ body,
   }
 
   ::-webkit-scrollbar {
-    @apply w-2
+    @apply w-1 md:w-2
   }
 
   /* Track */
